@@ -6,12 +6,16 @@
 #include <stdlib.h>
 #include "ni_usb3_class.h"
 
+#define REG_ACCESS 		0
+#define FIFO_ACCESS 	1
+
 int32_t ni_usb3_class::open(char * SerialNumber){
-	port.open(SerialNumber);
+	return port.open(SerialNumber) ? 1:0;
 }
 
 int32_t ni_usb3_class::close(void){
 	port.close();
+	return 0;
 }
 
 int32_t ni_usb3_class::write_mem(uint32_t *data, uint32_t count, uint32_t address, int bus_mode, uint32_t timeout_ms, uint32_t *written_data){
@@ -151,3 +155,4 @@ int32_t ni_usb3_class::write_reg(uint32_t data, uint32_t address){
 int32_t ni_usb3_class::listdevices(char *ListOfDevice, char *model,  int *count){
 	return port.listdevices(ListOfDevice, model, count);	
 }
+

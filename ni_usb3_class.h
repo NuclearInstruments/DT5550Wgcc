@@ -1,8 +1,7 @@
 #ifndef NI_USB3_CLASS_H
 #define NI_USB3_CLASS_H
 #include <stdint.h>
-#define REG_ACCESS 		0
-#define FIFO_ACCESS 	1
+
 
 #include "ftdi_ft60x.h"
 
