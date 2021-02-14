@@ -53,7 +53,10 @@
 
 
 
-
+NIUSB3_CORE_API int NI_USB3_Init() {
+	//Dummy function for back compatibility
+	return 0;
+}
 NIUSB3_CORE_API int NI_USB3_ConnectDevice(char *serial_number, NI_HANDLE *handle)
 {
 

@@ -63,6 +63,7 @@ enum USB_BUS_MODE
 	STREAMING = 1
 } ;
 
+NIUSB3_CORE_API int NI_USB3_Init();
 NIUSB3_CORE_API int fnniusb3_core(void);
 NIUSB3_CORE_API int NI_USB3_ListDevices(char *ListOfDevice, char *model,  int *Count);
 NIUSB3_CORE_API int NI_USB3_ConnectDevice(char *serial_number, NI_HANDLE *handle);
