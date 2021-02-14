@@ -126,7 +126,8 @@ NIUSB3_CORE_API int NI_USB3_ReadReg(uint32_t *data, uint32_t address, NI_HANDLE 
 NIUSB3_CORE_API int NI_USB3_ListDevices(char *ListOfDevice, char *model,  int *Count)
 {
 	ni_usb3_class usbclass;
-	usbclass.listdevices(ListOfDevice, model, Count);
+	return usbclass.listdevices(ListOfDevice, model, Count);
+	
 }
 
 

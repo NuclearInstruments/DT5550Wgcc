@@ -1,6 +1,17 @@
 #include <stdio.h>
 #include <string.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#include <chrono>
+#include <thread>
+
+#else
 #include <unistd.h>
+
+#endif
+
+
 #include <assert.h>
 
 #include <stdlib.h>
@@ -130,9 +141,9 @@ bool ftdi_ft60x::open(char *device_str)
 
     FT_EnableGPIO(m_handle, 0x3, 0x3);
 
-    usleep(1000);
+	ftdi_ft60x::sleep(1000);
     FT_WriteGPIO(m_handle, 0x3, 0x3);
-	usleep(1000);
+	ftdi_ft60x::sleep(1000);
 	FT_WriteGPIO(m_handle, 0x3, 0x0);
 
     return true;
@@ -157,16 +168,39 @@ int ftdi_ft60x::read(uint8_t *data, int length, int timeout_ms)
 
 #if !defined(_WIN32) && !defined(_WIN64) // Linux / MAC
     if ((err = FT_ReadPipeEx(m_handle, 0, data, length, &count, timeout_ms)) != FT_OK)
-#else // Windows
-    if ((err = FT_ReadPipeEx(m_handle, 0, data, length, &count, NULL)) != FT_OK)
-#endif
-    {
-        if (err == FT_TIMEOUT)
-            return 0;
+	{
+		if (err == FT_TIMEOUT)
+			return count;
 
-        printf("FT60x: FT_ReadPipeEx err %d\n", err);
-        return -1;
-    }
+		printf("FT60x: FT_ReadPipeEx err %d\n", err);
+		return -1;
+	}
+#else // Windows
+	FT_STATUS status;
+	DWORD rest;
+	DWORD partial;
+	err = FT_SetPipeTimeout(
+		m_handle,
+		0x82,
+		timeout_ms * 1.5
+	);
+	rest = length;
+	count = 0;
+	while (rest > 0) {
+		partial = 0;
+		if ((err = FT_ReadPipe(m_handle, 0x82, &data[count], rest, &partial, NULL)) != FT_OK)
+		{
+			if (err == FT_TIMEOUT)
+				return count;
+
+			printf("FT60x: FT_ReadPipeEx err %d\n", err);
+			return -1;
+		}
+		rest -= partial;
+		count += partial;
+	}
+#endif
+
 
     return (int)count;
 }
@@ -180,7 +214,13 @@ int ftdi_ft60x::write(uint8_t *data, int length, int timeout_ms)
 #if !defined(_WIN32) && !defined(_WIN64) // Linux / MAC
     FT_STATUS status = FT_WritePipeEx(m_handle, 0, data, length, &count, timeout_ms);
 #else // Windows
-    FT_STATUS status = FT_WritePipeEx(m_handle, 0, data, length, &count, NULL);
+	FT_STATUS status;
+	status = FT_SetPipeTimeout(
+		m_handle,
+		0x02,
+		timeout_ms * 1.5
+	);
+    status = FT_WritePipe(m_handle, 0x02, data, length, &count, NULL);
 #endif
     if (status  != FT_OK)
     {
@@ -255,5 +295,12 @@ int ftdi_ft60x::listdevices(char *ListOfDevice, char *model,  int *count)
 //-------------------------------------------------------------
 void ftdi_ft60x::sleep(int wait_us)
 {
-    usleep(wait_us);
+#if defined(_WIN32) || defined(_WIN64)
+	std::this_thread::sleep_for(std::chrono::microseconds(wait_us));
+
+#else
+	usleep(wait_us);
+
+#endif
+ 
 }

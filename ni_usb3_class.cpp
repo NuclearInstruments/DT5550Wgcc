@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+#if defined(_WIN32) || defined(_WIN64)
+
+#else
+	#include <unistd.h>
+
+#endif
 #include <assert.h>
 
 #include <stdlib.h>
@@ -47,7 +52,7 @@ int32_t ni_usb3_class::write_mem(uint32_t *data, uint32_t count, uint32_t addres
 
     if (sent != wr_len)
     {
-        fprintf(stderr, "ERROR: Failed to send command\n");
+        fprintf(stderr, "ERROR: Failed to send write header\n");
         return 1;
     }
 
@@ -58,7 +63,7 @@ int32_t ni_usb3_class::write_mem(uint32_t *data, uint32_t count, uint32_t addres
     
     if (sent != wr_len)
     {
-        fprintf(stderr, "ERROR: Failed to send command\n");
+        fprintf(stderr, "ERROR: Failed to send write\n");
         return 2;
     }
 
@@ -95,7 +100,7 @@ int32_t ni_usb3_class::read_mem(uint32_t *data, uint32_t count, uint32_t address
 
     if (sent != wr_len)
     {
-        fprintf(stderr, "ERROR: Failed to send command\n");
+        fprintf(stderr, "ERROR: Failed to send read header\n");
         return 1;
     }
 
@@ -105,7 +110,7 @@ int32_t ni_usb3_class::read_mem(uint32_t *data, uint32_t count, uint32_t address
  
     if (sent != wr_len)
     {
-        fprintf(stderr, "ERROR: Failed to send command\n");
+        fprintf(stderr, "ERROR: Failed to read %d/%d\n", sent, wr_len);
         return 2;
     }
 

@@ -8,13 +8,14 @@
 #define NI_USB3_WRAPPER_H
 
 #if defined(_WIN32) || defined(_WIN64)
-    #ifdef SCIDK_API_EXPORTS
+
+    #ifdef NIUSB3_CORE_EXPORTS
         #define NIUSB3_CORE_API extern "C" __declspec(dllexport) 
     #else
-        #define NIUSB3_CORE_API __declspec(dllimport)
+        #define NIUSB3_CORE_API extern "C" __declspec(dllimport)
     #endif
 #else
-    #ifdef SCIDK_API_EXPORTS
+    #ifdef NIUSB3_CORE_EXPORTS
         #define NIUSB3_CORE_API __attribute__((visibility("default")))
     #else
         #define NIUSB3_CORE_API
