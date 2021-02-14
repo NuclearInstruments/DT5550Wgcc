@@ -26,7 +26,10 @@
 #include <stdint.h>
 
 
-
+#if defined(_WIN32) || defined(_WIN64)
+#else
+	extern "C" {
+#endif
 
 
 enum USB_CONNECTION_STATUS
@@ -102,4 +105,8 @@ NIUSB3_CORE_API int NI_USB3_SetDT5550_DGBoardInfo(char *model, int asic_count, i
 NIUSB3_CORE_API int NI_USB3_GetDT5550WTempSens(int address, float *temp, NI_HANDLE *handle);
 
 
+#if defined(_WIN32) || defined(_WIN64)
+#else
+	}
+#endif
 #endif
