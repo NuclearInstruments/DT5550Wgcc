@@ -52,8 +52,7 @@
 #define RFA_ICAPDNA_INFO				RFA_ICAPDNA_BA + 0x10
 
 
-	uint32_t __IICBASEADDRESS;
-	uint32_t __IICBASEADDRESS_STATUS;
+
 
 NIUSB3_CORE_API int NI_USB3_ConnectDevice(char *serial_number, NI_HANDLE *handle)
 {
@@ -147,41 +146,41 @@ NIUSB3_CORE_API int NI_USB3_IIC_WriteData(uint8_t address, uint8_t *value, int l
 	if (NI_USB3_WriteReg(0, RFA_IIC_BA + 0, handle) != 0)
 	return -1;	*/
 	uint32_t data_tmp;
-	if (NI_USB3_WriteReg(1 << 8, __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg(1 << 8, handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 		do 
 		{
-			if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+			if (NI_USB3_ReadReg(&data_tmp,handle->__IICBASEADDRESS_STATUS, handle) != 0)
 				return -1;
 		} while ((data_tmp>>17)==0);
 
 
-	if (NI_USB3_WriteReg((address << 1) + (1 << 12), __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg((address << 1) + (1 << 12), handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 		do 
 		{
-			if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+			if (NI_USB3_ReadReg(&data_tmp,handle->__IICBASEADDRESS_STATUS, handle) != 0)
 				return -1;
 		} while ((data_tmp>>17)==0);
 
 
 	for (i = 0; i<len; i++)
 	{
-		if (NI_USB3_WriteReg((value[i]) + (1 << 12), __IICBASEADDRESS + 0, handle) != 0)
+		if (NI_USB3_WriteReg((value[i]) + (1 << 12), handle->__IICBASEADDRESS + 0, handle) != 0)
 			return -1;
 		do 
 		{
-			if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+			if (NI_USB3_ReadReg(&data_tmp,handle->__IICBASEADDRESS_STATUS, handle) != 0)
 				return -1;
 		} while ((data_tmp>>17)==0);
 
 	}
 
-	if (NI_USB3_WriteReg((1 << 9), __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg((1 << 9), handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 		do 
 		{
-			if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+			if (NI_USB3_ReadReg(&data_tmp,handle->__IICBASEADDRESS_STATUS, handle) != 0)
 				return -1;
 		} while ((data_tmp>>17)==0);
 
@@ -191,8 +190,8 @@ NIUSB3_CORE_API int NI_USB3_IIC_WriteData(uint8_t address, uint8_t *value, int l
 
 NIUSB3_CORE_API int NI_USB3_SetIICControllerBaseAddress(uint32_t ControlAddress, uint32_t StatusAddress, NI_HANDLE *handle)
 {
-	__IICBASEADDRESS = ControlAddress;
-	__IICBASEADDRESS_STATUS = StatusAddress;
+	handle->__IICBASEADDRESS = ControlAddress;
+	handle->__IICBASEADDRESS_STATUS = StatusAddress;
 	return 0;
 }
 
@@ -212,67 +211,67 @@ NIUSB3_CORE_API int NI_USB3_IIC_ReadData(uint8_t address, uint8_t *value, int le
 	uint32_t data_tmp;
 
 	
-	if (NI_USB3_WriteReg(1 << 8, __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg(1 << 8, handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 
 
-	if (NI_USB3_WriteReg((address << 1) + (1 << 12), __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg((address << 1) + (1 << 12), handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 	
 	
 	do 
 	{
-		if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+		if (NI_USB3_ReadReg(&data_tmp, handle->__IICBASEADDRESS_STATUS, handle) != 0)
 			return -1;
 	} while ((data_tmp>>17)==0);
 
 
 	for (i = 0; i<len; i++)
 	{
-		if (NI_USB3_WriteReg((value[i]) + (1 << 12), __IICBASEADDRESS + 0, handle) != 0)
+		if (NI_USB3_WriteReg((value[i]) + (1 << 12), handle->__IICBASEADDRESS + 0, handle) != 0)
 			return -1;
 		
 		do 
 		{
-			if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+			if (NI_USB3_ReadReg(&data_tmp,handle->__IICBASEADDRESS_STATUS, handle) != 0)
 				return -1;
 		} while ((data_tmp>>17)==0);
 
 
 	}
 
-	if (NI_USB3_WriteReg(1 << 8, __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg(1 << 8, handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 
-	if (NI_USB3_WriteReg((address << 1) + 1 + (1 << 12), __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg((address << 1) + 1 + (1 << 12), handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 	
 	do 
 	{
-		if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+		if (NI_USB3_ReadReg(&data_tmp,handle->__IICBASEADDRESS_STATUS, handle) != 0)
 			return -1;
 	} while ((data_tmp>>17)==0);
 
 
 	for (i = 0; i<len_read; i++)
 	{
-		if (NI_USB3_WriteReg((1 << 11) + (1 << 10), __IICBASEADDRESS + 0, handle) != 0)
+		if (NI_USB3_WriteReg((1 << 11) + (1 << 10), handle->__IICBASEADDRESS + 0, handle) != 0)
 			return -1;
 		do 
 		{
-			if (NI_USB3_ReadReg(&data_tmp, __IICBASEADDRESS_STATUS, handle) != 0)
+			if (NI_USB3_ReadReg(&data_tmp, handle->__IICBASEADDRESS_STATUS, handle) != 0)
 				return -1;
 
 		} while ((data_tmp>>17)==0);
 		value_read[i] = data_tmp & 0xFF;
 	}
 
-	if (NI_USB3_WriteReg((1 << 9), __IICBASEADDRESS + 0, handle) != 0)
+	if (NI_USB3_WriteReg((1 << 9), handle->__IICBASEADDRESS + 0, handle) != 0)
 		return -1;
 
 	do 
 	{
-		if (NI_USB3_ReadReg(&data_tmp,__IICBASEADDRESS_STATUS, handle) != 0)
+		if (NI_USB3_ReadReg(&data_tmp,handle->__IICBASEADDRESS_STATUS, handle) != 0)
 			return -1;
 	} while ((data_tmp>>17)==0);
 

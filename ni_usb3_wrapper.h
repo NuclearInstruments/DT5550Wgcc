@@ -4,7 +4,8 @@
 // che utilizza questa DLL. In questo modo qualsiasi altro progetto i cui file di origine includono questo file vedranno le funzioni 
 // NIUSB3_CORE_API come importate da una DLL, mentre la DLL vedrà i simboli
 // definiti con questa macro come esportati.
-#pragma once
+#ifndef NI_USB3_WRAPPER_H
+#define NI_USB3_WRAPPER_H
 
 #if defined(_WIN32) || defined(_WIN64)
     #ifdef SCIDK_API_EXPORTS
@@ -38,6 +39,8 @@ enum USB_CONNECTION_STATUS
 typedef struct NI_HANDLE
 {
 	void  *device_handle;
+	uint32_t __IICBASEADDRESS;
+	uint32_t __IICBASEADDRESS_STATUS;	
 	USB_CONNECTION_STATUS connection_status;
 } NI_HANDLE;
 
@@ -99,3 +102,4 @@ NIUSB3_CORE_API int NI_USB3_SetDT5550_DGBoardInfo(char *model, int asic_count, i
 NIUSB3_CORE_API int NI_USB3_GetDT5550WTempSens(int address, float *temp, NI_HANDLE *handle);
 
 
+#endif

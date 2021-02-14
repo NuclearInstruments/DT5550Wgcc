@@ -26,7 +26,7 @@ int main(){
     }
 
     NI_USB3_SetIICControllerBaseAddress(2147811336, 2147811337, &dt5550w);
-    NI_USB3_SetHV(true, 40, &dt5550w);
+    NI_USB3_SetHV(true, 30, &dt5550w);
     NI_USB3_GetDT5550_DGBoardInfo(board_model, &asic_count, &SN, &dt5550w);
     printf("Board model: %s\n",board_model);
     printf("Asic Count:  %d\n",asic_count);
@@ -41,9 +41,9 @@ int main(){
     printf("Temp[0]:     %f\n",temp);
     NI_USB3_GetDT5550WTempSens(1, &temp, &dt5550w);
     printf("Temp[1]:     %f\n",temp);
-exit(0);
 
-    for (int i =0; i<1000;i++){
+
+   /* for (int i =0; i<1000;i++){
         NI_USB3_WriteData(data, 
                           1024,
                           0xFFFD0000,
@@ -64,7 +64,7 @@ exit(0);
               printf("%d   :   %d\n", i, datar[i]);
         printf("."); fflush(stdout);
     }
-    printf("\n\n");
+    printf("\n\n");*/
 }
 /*ni_usb3_class dt5550w;
 

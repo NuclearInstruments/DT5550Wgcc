@@ -128,6 +128,13 @@ bool ftdi_ft60x::open(char *device_str)
         return false;
     }
 
+    FT_EnableGPIO(m_handle, 0x3, 0x3);
+
+    usleep(1000);
+    FT_WriteGPIO(m_handle, 0x3, 0x3);
+	usleep(1000);
+	FT_WriteGPIO(m_handle, 0x3, 0x0);
+
     return true;
 }
 //-------------------------------------------------------------
