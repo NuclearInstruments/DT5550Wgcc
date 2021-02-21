@@ -25,19 +25,22 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include  <stdbool.h>
 
 
 #if defined(_WIN32) || defined(_WIN64)
 #else
-	extern "C" {
+	#ifdef __cplusplus
+		extern "C" {
+	#endif
 #endif
 
 
-enum USB_CONNECTION_STATUS
+typedef enum 
 {
 	NOT_CONNECTED = 0,
 	CONNECTED = 1
-} ;
+} USB_CONNECTION_STATUS;
 
 
 typedef struct NI_HANDLE
@@ -57,11 +60,11 @@ typedef struct NI_IIC_HANDLE
 } NI_IIC_HANDLE;
 
 
-enum USB_BUS_MODE
+typedef enum 
 {
 	REG_ACCESS = 0,
 	STREAMING = 1
-} ;
+} USB_BUS_MODE;
 
 NIUSB3_CORE_API int NI_USB3_Init();
 NIUSB3_CORE_API int fnniusb3_core(void);
@@ -109,6 +112,8 @@ NIUSB3_CORE_API int NI_USB3_GetDT5550WTempSens(int address, float *temp, NI_HAND
 
 #if defined(_WIN32) || defined(_WIN64)
 #else
-	}
+	#ifdef __cplusplus
+		}
+	#endif
 #endif
 #endif
