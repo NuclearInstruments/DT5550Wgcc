@@ -13,8 +13,8 @@
 #include "ni_usb3_wrapper.h"
 
 int main(){
-    uint32_t data[1024];
-    uint32_t datar[2048];
+    uint32_t data[1024*32];
+    uint32_t datar[2048*32];
     uint32_t written_data;
     uint32_t read_data;
     uint32_t valid_data;   
@@ -26,12 +26,20 @@ int main(){
     float current;
     int SN;
     NI_HANDLE dt5550w;
-    if (NI_USB3_ConnectDevice("NI120010", &dt5550w)) {
+    char listofdevices[1024];
+    int Count;
+    NI_USB3_ListDevices(listofdevices, "DT5550W",  &Count);
+
+    printf("Devices found: %d\n%s\n", Count, listofdevices);
+	
+    NI_USB3_SetboardModel(DT5550W, &dt5550w);
+
+    if (NI_USB3_ConnectDevice("NI120007", &dt5550w)) {
         printf("Unable to connect to the board");
         exit(0);
     }
 
-    NI_USB3_SetIICControllerBaseAddress(2147811336, 2147811337, &dt5550w);
+/*    NI_USB3_SetIICControllerBaseAddress(2147811336, 2147811337, &dt5550w);
     NI_USB3_SetHV(true, 30, &dt5550w);
     NI_USB3_GetDT5550_DGBoardInfo(board_model, &asic_count, &SN, &dt5550w);
     printf("Board model: %s\n",board_model);
@@ -47,9 +55,12 @@ int main(){
     printf("Temp[0]:     %f\n",temp);
     NI_USB3_GetDT5550WTempSens(1, &temp, &dt5550w);
     printf("Temp[1]:     %f\n",temp);
-	
+*/	
 
-    for (int i =0; i<10000;i++){
+    for (int i =0; i<1000;i++){
+        for (int i=0;i<1024;i++)
+            	data[i] = i;
+
         NI_USB3_WriteData(data, 
                           1024,
                           0xFFFD0000,

@@ -12,10 +12,10 @@
 #include "ni_usb3_class.h"
 
 #define REG_ACCESS 		0
-#define FIFO_ACCESS 	1
+#define FIFO_ACCESS 		1
 
-int32_t ni_usb3_class::open(char * SerialNumber){
-	return port.open(SerialNumber) ? 1:0;
+int32_t ni_usb3_class::open(char * SerialNumber, int clock){
+	return port.open(SerialNumber, clock) ? 1:0;
 }
 
 int32_t ni_usb3_class::close(void){
@@ -76,7 +76,7 @@ int32_t ni_usb3_class::read_mem(uint32_t *data, uint32_t count, uint32_t address
     uint8_t *data_pointer;
     uint32_t ulBytesWritten = 0;
     int32_t pTotalData = count;
-    int32_t timeoutns = timeout_ms * 100000;
+    int32_t timeoutns = timeout_ms * 100000 * 2;
     int32_t wr_len;
 
     //header

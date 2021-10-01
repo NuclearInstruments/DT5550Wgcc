@@ -8,7 +8,7 @@ class ftdi_ft60x : ftdi_driver_api
 {
 public:
     ftdi_ft60x();
-    bool open(char *device_str);
+    bool open(char *device_str, int clock);
     void close(void);
     int  read(uint8_t *data, int length, int timeout_ms);
     int  write(uint8_t *data, int length, int timeout_ms);

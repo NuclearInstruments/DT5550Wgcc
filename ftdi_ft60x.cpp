@@ -71,6 +71,7 @@ bool ftdi_ft60x::configure(char *device_str, uint8_t clock)
     new_cfg.FIFOMode      = CONFIGURATION_FIFO_MODE_245;
     new_cfg.ChannelConfig = CONFIGURATION_CHANNEL_CONFIG_1;
 
+
     // Disable stop on underrun
     new_cfg.OptionalFeatureSupport = CONFIGURATION_OPTIONAL_FEATURE_DISABLECANCELSESSIONUNDERRUN;
 
@@ -117,12 +118,21 @@ ftdi_ft60x::ftdi_ft60x()
 //-------------------------------------------------------------
 // open: Try and open FT60x interface and configure
 //-------------------------------------------------------------
-bool ftdi_ft60x::open(char *device_str)
+bool ftdi_ft60x::open(char *device_str, int clock)
 {
+    CONFIGURATION_FIFO_CLK clk;
+    switch (clock) 
+    {
+  	case 0:	clk = CONFIGURATION_FIFO_CLK_100; break;
+  	case 1:	clk = CONFIGURATION_FIFO_CLK_66; break;
+  	case 2:	clk = CONFIGURATION_FIFO_CLK_50; break;
+  	case 3:	clk = CONFIGURATION_FIFO_CLK_40; break;
+    }
+  
 
 
     // Make sure device is configured as expected
-    if (!configure(device_str, CONFIGURATION_FIFO_CLK_100))
+    if (!configure(device_str, clk))
     {
         printf("FT60x: Failed to configure device\n");
         return false;

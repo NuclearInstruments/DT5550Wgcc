@@ -57,15 +57,22 @@ NIUSB3_CORE_API int NI_USB3_Init() {
 	//Dummy function for back compatibility
 	return 0;
 }
+
+NIUSB3_CORE_API int NI_USB3_SetboardModel(BOARD_MODEL bm, NI_HANDLE *handle){
+	handle->bm = bm;
+	return 0;
+}
 NIUSB3_CORE_API int NI_USB3_ConnectDevice(char *serial_number, NI_HANDLE *handle)
 {
-
+        int clk=0;
 	ni_usb3_class *usbclass = new ni_usb3_class() ;
 	handle->device_handle = usbclass;
 
     handle->connection_status = NOT_CONNECTED;
-    
-    if (!usbclass->open(serial_number))
+
+	if (handle->bm==DT5550) clk = 1;
+
+    if (!usbclass->open(serial_number, clk))
         return 1;
 	
 	handle->connection_status = CONNECTED;
@@ -128,6 +135,7 @@ NIUSB3_CORE_API int NI_USB3_ReadReg(uint32_t *data, uint32_t address, NI_HANDLE 
 
 NIUSB3_CORE_API int NI_USB3_ListDevices(char *ListOfDevice, char *model,  int *Count)
 {
+
 	ni_usb3_class usbclass;
 	return usbclass.listdevices(ListOfDevice, model, Count);
 	

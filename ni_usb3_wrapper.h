@@ -34,6 +34,11 @@
 		extern "C" {
 	#endif
 #endif
+typedef enum 
+{
+	DT5550W = 0,
+	DT5550 = 1
+} BOARD_MODEL;
 
 
 typedef enum 
@@ -49,6 +54,7 @@ typedef struct NI_HANDLE
 	uint32_t __IICBASEADDRESS;
 	uint32_t __IICBASEADDRESS_STATUS;	
 	USB_CONNECTION_STATUS connection_status;
+	BOARD_MODEL bm=DT5550W;
 } NI_HANDLE;
 
 
@@ -66,9 +72,12 @@ typedef enum
 	STREAMING = 1
 } USB_BUS_MODE;
 
+
+
 NIUSB3_CORE_API int NI_USB3_Init();
 NIUSB3_CORE_API int fnniusb3_core(void);
 NIUSB3_CORE_API int NI_USB3_ListDevices(char *ListOfDevice, char *model,  int *Count);
+NIUSB3_CORE_API int NI_USB3_SetboardModel(BOARD_MODEL bm, NI_HANDLE *handle);
 NIUSB3_CORE_API int NI_USB3_ConnectDevice(char *serial_number, NI_HANDLE *handle);
 NIUSB3_CORE_API int NI_USB3_CloseConnection(NI_HANDLE *handle);
 NIUSB3_CORE_API int NI_USB3_Init();

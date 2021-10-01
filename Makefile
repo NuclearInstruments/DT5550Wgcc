@@ -4,7 +4,7 @@ LFLAGS     = -Llinux-x86_64
 LIBS       = -l:libftd3xx.so
 
 
-all: libni_usb3.so test #$(TARGETS)
+all: libni_usb3.so test test_dt5550 #$(TARGETS)
 
 libni_usb3.so:
 	g++ -o $@ $(CFLAGS) $(LFLAGS) $(COMMON_SRC) $(LIBS) -shared -fPIC  -g
@@ -12,11 +12,13 @@ libni_usb3.so:
 test:
 	g++ -o $@ $@.cpp -l:libni_usb3.so -L.
 
+test_dt5550:
+	g++ -o $@ $@.cpp -l:libni_usb3.so -L.
 #$(TARGETS):
 #	g++ -o $@ $(CFLAGS) $(LFLAGS) $@.cpp $(COMMON_SRC) $(LIBS)
 
 clean:
-	-rm -rf libni_usb3.so test
+	-rm -rf libni_usb3.so test test_dt5550
 
 
 # PREFIX is environment variable, but if it is not set, then set default value

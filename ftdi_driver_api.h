@@ -9,7 +9,7 @@
 class ftdi_driver_api
 {
 public:
-    virtual bool open(char * device_str) = 0;
+    virtual bool open(char * device_str, int clock) = 0;
     virtual void close(void) = 0;
     virtual int  read(uint8_t *data, int length, int timout_ms) = 0;
     virtual int  write(uint8_t *data, int length, int timout_ms) = 0;

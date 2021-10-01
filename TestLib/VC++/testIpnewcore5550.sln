@@ -1,0 +1,26 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("58894845-7555-478c-8e92-126e62ddc458") = "testIpnewcore5550_Example", "testIpnewcore5550_EXAMPLE.vcxproj", "296671d9-0b21-4f57-a4cd-fecc76e185e3"
+EndProject
+Project("58894845-7555-478c-8e92-126e62ddc458") = "testIpnewcore5550_LIB", "testIpnewcore5550_LIB.vcxproj", "23e37a56-fa37-45b8-9aec-4be369d87db0"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		296671d9-0b21-4f57-a4cd-fecc76e185e3.Debug|x86.ActiveCfg = Debug|Win32
+		296671d9-0b21-4f57-a4cd-fecc76e185e3.Debug|x86.Build.0 = Debug|Win32
+		296671d9-0b21-4f57-a4cd-fecc76e185e3.Release|x86.ActiveCfg = Release|Win32
+		296671d9-0b21-4f57-a4cd-fecc76e185e3.Release|x86.Build.0 = Release|Win32
+		23e37a56-fa37-45b8-9aec-4be369d87db0.Debug|x86.ActiveCfg = Debug|Win32
+		23e37a56-fa37-45b8-9aec-4be369d87db0.Debug|x86.Build.0 = Debug|Win32
+		23e37a56-fa37-45b8-9aec-4be369d87db0.Release|x86.ActiveCfg = Release|Win32
+		23e37a56-fa37-45b8-9aec-4be369d87db0.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
