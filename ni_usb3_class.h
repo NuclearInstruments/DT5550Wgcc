@@ -22,6 +22,7 @@ public:
 
 protected:
 	ftdi_ft60x port;
+	float clock_period;
 };
 
 #endif

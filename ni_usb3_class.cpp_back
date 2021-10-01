@@ -114,11 +114,9 @@ int32_t ni_usb3_class::read_mem(uint32_t *data, uint32_t count, uint32_t address
     }
 
     data_pointer = (uint8_t *) data;
-    wr_len= (count)*4;
+    wr_len= (count+2)*4;
     sent = port.read(data_pointer, wr_len, timeout_ms);
-
-//   printf("recv: %d\n", sent);
-/* 
+ 
     if (sent != wr_len)
     {
         fprintf(stderr, "ERROR: Failed to read %d/%d\n", sent, wr_len);
@@ -140,14 +138,7 @@ int32_t ni_usb3_class::read_mem(uint32_t *data, uint32_t count, uint32_t address
     if (*keyword == 0xF1CA600D)
         return 0;
     else
-        return 1;*/
-
-    if(read_data!=NULL)
-	    *read_data  = sent/4;
-
-    if(valid_data!=NULL)
-    	*valid_data =sent/4;
-return 0;
+        return 1;
 }
 
 int32_t ni_usb3_class::read_reg(uint32_t *data, uint32_t address){
@@ -155,7 +146,6 @@ int32_t ni_usb3_class::read_reg(uint32_t *data, uint32_t address){
 	uint32_t dummy_vector[4];
 	int32_t ret = read_mem(dummy_vector, 1, address, REG_ACCESS , 1000,  NULL, &read_data);
 	*data = dummy_vector[0];
-  //      printf("read add:%8x data: %8x\n", address, *data);
 	if (ret)
 		return -1;
 

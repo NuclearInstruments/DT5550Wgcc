@@ -24,6 +24,7 @@
 
 #define N_CH 		2
 #define N_SAMPLES 	16384
+//0x1000
 
 
 
@@ -182,7 +183,7 @@ int main()
 	    printf("position   %d\n",position);
 
 	    ret = NI_USB3_ReadData(data_osc,size_osc,SCI_REG_Oscilloscope_0_FIFOADDRESS,REG_ACCESS,2000, &dt5550, &read_data_osc, &valid_data_osc);
-	    printf("FIFOADDRESS: %d\n",ret);
+	    printf("FIFOADDRESS: %d    -> DATA VALID:%d\n",ret, valid_data_osc);
 
 	    ret = OSCILLOSCOPE_RECONSTRUCT(data_osc, position, pre_trigger, read_analog, read_digital0, read_digital1, read_digital2, read_digital3);
 	    printf("RECONSTRUCT: %d\n",ret);
