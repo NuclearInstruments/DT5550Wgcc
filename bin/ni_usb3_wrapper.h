@@ -25,19 +25,27 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include  <stdbool.h>
 
 
 #if defined(_WIN32) || defined(_WIN64)
 #else
-	extern "C" {
+	#ifdef __cplusplus
+		extern "C" {
+	#endif
 #endif
+typedef enum 
+{
+	DT5550W = 0,
+	DT5550 = 1
+} BOARD_MODEL;
 
 
-enum USB_CONNECTION_STATUS
+typedef enum 
 {
 	NOT_CONNECTED = 0,
 	CONNECTED = 1
-} ;
+} USB_CONNECTION_STATUS;
 
 
 typedef struct NI_HANDLE
@@ -46,6 +54,7 @@ typedef struct NI_HANDLE
 	uint32_t __IICBASEADDRESS;
 	uint32_t __IICBASEADDRESS_STATUS;	
 	USB_CONNECTION_STATUS connection_status;
+	BOARD_MODEL bm=DT5550W;
 } NI_HANDLE;
 
 
@@ -57,15 +66,18 @@ typedef struct NI_IIC_HANDLE
 } NI_IIC_HANDLE;
 
 
-enum USB_BUS_MODE
+typedef enum 
 {
 	REG_ACCESS = 0,
 	STREAMING = 1
-} ;
+} USB_BUS_MODE;
+
+
 
 NIUSB3_CORE_API int NI_USB3_Init();
 NIUSB3_CORE_API int fnniusb3_core(void);
 NIUSB3_CORE_API int NI_USB3_ListDevices(char *ListOfDevice, char *model,  int *Count);
+NIUSB3_CORE_API int NI_USB3_SetboardModel(BOARD_MODEL bm, NI_HANDLE *handle);
 NIUSB3_CORE_API int NI_USB3_ConnectDevice(char *serial_number, NI_HANDLE *handle);
 NIUSB3_CORE_API int NI_USB3_CloseConnection(NI_HANDLE *handle);
 NIUSB3_CORE_API int NI_USB3_Init();
@@ -109,6 +121,8 @@ NIUSB3_CORE_API int NI_USB3_GetDT5550WTempSens(int address, float *temp, NI_HAND
 
 #if defined(_WIN32) || defined(_WIN64)
 #else
-	}
+	#ifdef __cplusplus
+		}
+	#endif
 #endif
 #endif
