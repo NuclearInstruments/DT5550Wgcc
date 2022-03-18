@@ -55,6 +55,8 @@ typedef struct NI_HANDLE
 	uint32_t __IICBASEADDRESS_STATUS;	
 	USB_CONNECTION_STATUS connection_status;
 	BOARD_MODEL bm=DT5550W;
+	uint32_t version;
+	uint32_t board_identifier;
 } NI_HANDLE;
 
 

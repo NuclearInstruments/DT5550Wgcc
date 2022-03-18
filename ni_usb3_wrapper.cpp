@@ -75,6 +75,9 @@ NIUSB3_CORE_API int NI_USB3_ConnectDevice(char *serial_number, NI_HANDLE *handle
     if (!usbclass->open(serial_number, clk))
         return 1;
 	
+	NI_USB3_ReadReg(&(handle->version), 0xFFFEFFFC, handle);
+	NI_USB3_ReadReg(&(handle->board_identifier), 0xFFFFFFFB, handle);
+	
 	handle->connection_status = CONNECTED;
 	return 0;
 }
@@ -430,19 +433,48 @@ NIUSB3_CORE_API int NI_USB3_GetDT5550_DGBoardInfo(char *model, int *asic_count, 
 	int i;
 	uint8_t vv[16];
 	vv[0] = 0;
-	NI_USB3_IIC_ReadData(0x54, vv, 1,vv,16, handle);
+	if (handle->version < 0x21050500) {
+		NI_USB3_IIC_ReadData(0x54, vv, 1,vv,16, handle);
 
-	for(i=0;i<3;i++)
-		model[i] = vv[i+4];
+		for(i=0;i<3;i++)
+			model[i] = vv[i+4];
 
-	*asic_count = vv[7];
-	*SN = vv[8]+(vv[9]<<8)+(vv[10]<<16)+(vv[11]<<24);
-	model[3]='\0';
-	vv[4]='\0';
-	if (strcmp((char *)vv,"NI5W") == 0)
-		return 0;
-	else
-		return 1;
+		*asic_count = vv[7];
+		*SN = vv[8]+(vv[9]<<8)+(vv[10]<<16)+(vv[11]<<24);
+		model[3]='\0';
+		vv[4]='\0';
+		if (strcmp((char *)vv,"NI5W") == 0)
+			return 0;
+		else
+			return 1;
+	}
+	else {
+		uint32_t data;
+		char *p;
+		char _key[8];
+		char _model[8];
+		p = (char*)&data;
+		NI_USB3_ReadReg(&data, 0xFFFF0030, handle);
+		_key[0] = p[0];
+		_key[1] = p[1];
+		_key[2] = p[2];
+		_key[3] = p[3];
+		_key[4] = '\0';
+		NI_USB3_ReadReg(&data, 0xFFFF0031, handle);
+		_model[0] = p[0];
+		_model[1] = p[1];
+		_model[2] = p[2];
+		_model[3] = '\0';
+		NI_USB3_ReadReg(&data, 0xFFFF0032, handle);
+		*SN = data;
+		NI_USB3_ReadReg(&data, 0xFFFF0033, handle);
+		*asic_count = data;
+		strcpy(model, _model);
+		if (strcmp((char *)_key, "NI5W") == 0)
+			return 0;
+		else
+			return 1;
+	}		
 }
 
 
@@ -468,95 +500,137 @@ NIUSB3_CORE_API int NI_USB3_SetDT5550_DGBoardInfo(char *model, int asic_count, i
 	vv[10] = (SN>>16) & 0xFF;
 	vv[11] = (SN>>24) & 0xFF;
 
-	for (i =0;i<16;i++)
-	{
-		vv2[0]= i;
-		vv2[1]= vv[i];
-		NI_USB3_IIC_WriteData(0x54, vv2,2, handle);
-		Sleep(15);
+	if (handle->version < 0x21050500) {
+		for (i =0;i<16;i++)
+		{
+			vv2[0]= i;
+			vv2[1]= vv[i];
+			NI_USB3_IIC_WriteData(0x54, vv2,2, handle);
+			Sleep(15);
+		}
 	}
-
+	else {
+		for (i = 0; i < 16; i++) {
+			uint32_t status;
+			do {
+				NI_USB3_ReadReg(&status, 0xFFFF0100, handle);
+			} while (status & 0x1 == 0);
+			Sleep(10);
+			NI_USB3_WriteReg((i << 8) + (uint32_t)vv[i], 0xFFFF0034, handle);
+		}
+	}
 	return 0;
+
 }
 
 NIUSB3_CORE_API int NI_USB3_SetHV(bool Enable, float voltage, NI_HANDLE *handle)
 {
 	uint8_t vv[16];
+	if (handle->version < 0x21050500) {
+		vv[0] = 1;
+		vv[1] = 2;
+		vv[2] = 0;
+		vv[3] = 0;
+		vv[4] = 0;
+		vv[5] = 0;
+		NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
 
-	vv[0] = 1;
-	vv[1] = 2;
-	vv[2] = 0;
-	vv[3] = 0;
-	vv[4] = 0;
-	vv[5] = 0;
-	NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
+		vv[0] = 6;
+		vv[1] = 2;
+		vv[2] = 10;
+		vv[3] = 0;
+		vv[4] = 0;
+		vv[5] = 0;
+		NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
 
-	vv[0] = 6;
-	vv[1] = 2;
-	vv[2] = 10;
-	vv[3] = 0;
-	vv[4] = 0;
-	vv[5] = 0;
-	NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
+		vv[0] = 2;
+		vv[1] = 3;
+		vv[2] = 0;
+		vv[3] = 0;
+		vv[4] = 0;
+		vv[5] = 0;
+		memcpy(&vv[2], &voltage, 4);
+		NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
 
-	vv[0] = 2;
-	vv[1] = 3;
-	vv[2] = 0;
-	vv[3] = 0;
-	vv[4] = 0;
-	vv[5] = 0;
-	memcpy(&vv[2], &voltage, 4);
-	NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
-
-	vv[0] = 0;
-	vv[1] = 2;
-	vv[2] = Enable == true ? 1 : 0;
-	vv[3] = 0;
-	vv[4] = 0;
-	vv[5] = 0;
-	NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
-
+		vv[0] = 0;
+		vv[1] = 2;
+		vv[2] = Enable == true ? 1 : 0;
+		vv[3] = 0;
+		vv[4] = 0;
+		vv[5] = 0;
+		NI_USB3_IIC_WriteData(0x73, vv, 6, handle);
+	}
+	else {
+		NI_USB3_WriteReg((uint32_t)(voltage * 10000), 0xFFFF0002, handle);
+		NI_USB3_WriteReg((uint32_t)((voltage+8) * 10000), 0xFFFF0009, handle);
+		NI_USB3_WriteReg(0, 0xFFFF0003, handle);
+		NI_USB3_WriteReg(Enable == true ? 1 : 0, 0xFFFF0000, handle);
+		return 0;
+	}
 }
 
 
 NIUSB3_CORE_API int NI_USB3_GetHV(bool *Enable, float *voltage, float *current, NI_HANDLE *handle)
 {
-	uint8_t vv[16];
-	uint32_t *data;
-	data=(uint32_t*)vv;
-	vv[0] = 0;
-	vv[1] = 0;
-	NI_USB3_IIC_ReadData(0x73, vv, 2, vv, 4, handle);
-	*Enable  =  vv[0] > 0 ? true: false;
-	vv[0] = 231;
-	vv[1] = 1;
-	NI_USB3_IIC_ReadData(0x73, vv, 2, vv, 4, handle);
+	if (handle->version < 0x21050500) {	
+		uint8_t vv[16];
+		uint32_t *data;
+		data=(uint32_t*)vv;
+		vv[0] = 0;
+		vv[1] = 0;
+		NI_USB3_IIC_ReadData(0x73, vv, 2, vv, 4, handle);
+		*Enable  =  vv[0] > 0 ? true: false;
+		vv[0] = 231;
+		vv[1] = 1;
+		NI_USB3_IIC_ReadData(0x73, vv, 2, vv, 4, handle);
 
-	*voltage  =( (float) *data )/10000.0;
+		*voltage  =( (float) *data )/10000.0;
 
-	vv[0] = 232;
-	vv[1] = 1;
-	NI_USB3_IIC_ReadData(0x73, vv, 2, vv, 4, handle);
-	*current  =( (float) *data )/10000.0;
-	if (*current>10000) *current = 0;
-
+		vv[0] = 232;
+		vv[1] = 1;
+		NI_USB3_IIC_ReadData(0x73, vv, 2, vv, 4, handle);
+		*current  =( (float) *data )/10000.0;
+		if (*current>10000) *current = 0;
+	}
+	else {
+		uint32_t data;
+		int32_t *datai;
+		datai = (int32_t*)&data;
+		NI_USB3_ReadReg(&data, 0xFFFF0010, handle);
+		*Enable = data & 0x1 ? true : false;
+		NI_USB3_ReadReg(&data, 0xFFFF0011, handle);
+		*voltage = ((double)data) / 10000.0;
+		NI_USB3_ReadReg(&data, 0xFFFF0012, handle);
+		*current = ((double)*datai) / 10.0;
+		return 0;
+	}
 }
 
 
 
 NIUSB3_CORE_API int NI_USB3_GetDT5550WTempSens(int address, float *temp, NI_HANDLE *handle)
 {
-	uint8_t vv[16];
-	uint32_t *data;
-	data=(uint32_t*)vv;
-	vv[0] = 0;
-	NI_USB3_IIC_ReadData(0x48 + address, vv, 1, vv, 2, handle);
-	int32_t value;
-	value = (vv[0] << 4) + ((vv[1]>>4) & 0xF);
-	if (value > 0x800) value = -(0xFFF - value);
+	if (handle->version < 0x21050500) {
+		uint8_t vv[16];
+		uint32_t *data;
+		data=(uint32_t*)vv;
+		vv[0] = 0;
+		NI_USB3_IIC_ReadData(0x48 + address, vv, 1, vv, 2, handle);
+		int32_t value;
+		value = (vv[0] << 4) + ((vv[1]>>4) & 0xF);
+		if (value > 0x800) value = -(0xFFF - value);
 
-	*temp = ((float) value)/2048.0 * 128.0;
+		*temp = ((float) value)/2048.0 * 128.0;
+	}
+	else {
+		uint32_t data;
+		address = (address > 1 ? 1 : address);
+		NI_USB3_ReadReg(&data, 0xFFFF0020 + address, handle);
+		*temp = ((double)data) / 16.0;
+		return 0;
+	}
 }
+
 
 NIUSB3_CORE_API int NI_USB3_SetOffset(bool top, uint32_t DACCODE, NI_HANDLE *handle)
 {

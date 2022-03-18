@@ -34,18 +34,18 @@ int main(){
 	
     NI_USB3_SetboardModel(DT5550W, &dt5550w);
 
-    if (NI_USB3_ConnectDevice("NI120007", &dt5550w)) {
+    if (NI_USB3_ConnectDevice("NI120010", &dt5550w)) {
         printf("Unable to connect to the board");
         exit(0);
     }
 
-/*    NI_USB3_SetIICControllerBaseAddress(2147811336, 2147811337, &dt5550w);
+/*    NI_USB3_SetIICControllerBaseAddress(2147811336, 2147811337, &dt5550w);*/
     NI_USB3_SetHV(true, 30, &dt5550w);
     NI_USB3_GetDT5550_DGBoardInfo(board_model, &asic_count, &SN, &dt5550w);
     printf("Board model: %s\n",board_model);
     printf("Asic Count:  %d\n",asic_count);
     printf("SN:          %d\n",SN);
-
+	while (1){
     NI_USB3_GetHV(&Enable, &voltage, &current, &dt5550w);
     printf("HV enable:   %d\n",Enable);
     printf("HV voltage:  %f\n",voltage);
@@ -55,7 +55,8 @@ int main(){
     printf("Temp[0]:     %f\n",temp);
     NI_USB3_GetDT5550WTempSens(1, &temp, &dt5550w);
     printf("Temp[1]:     %f\n",temp);
-*/	
+	Sleep(1000);
+	}
 
     for (int i =0; i<1000;i++){
         for (int i=0;i<1024;i++)
