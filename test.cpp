@@ -31,20 +31,54 @@ int main(){
     NI_USB3_ListDevices(listofdevices, "DT5550W",  &Count);
 
     printf("Devices found: %d\n%s\n", Count, listofdevices);
+    
+    
 	
     NI_USB3_SetboardModel(DT5550W, &dt5550w);
 
+    
     if (NI_USB3_ConnectDevice("NI120010", &dt5550w)) {
-        printf("Unable to connect to the board");
+        printf("Unable to connect to the board\n");
         exit(0);
     }
-
-/*    NI_USB3_SetIICControllerBaseAddress(2147811336, 2147811337, &dt5550w);*/
-    NI_USB3_SetHV(true, 30, &dt5550w);
+    
+    
+    
+     
+    printf("Connected to hardware\n");
+    
     NI_USB3_GetDT5550_DGBoardInfo(board_model, &asic_count, &SN, &dt5550w);
     printf("Board model: %s\n",board_model);
     printf("Asic Count:  %d\n",asic_count);
-    printf("SN:          %d\n",SN);
+    printf("SN:          %d\n",SN);   
+    
+    
+    printf("Memory access reading. Running oscilloscope in free running .... ");
+    uint32_t mydata[1200];
+    NI_USB3_WriteReg(0, 0x805, &dt5550w);
+    NI_USB3_WriteReg(0x80, 0x802, &dt5550w);
+    NI_USB3_WriteReg(1, 0x805, &dt5550w);
+    usleep(100000);
+    NI_USB3_ReadData(mydata, 1000, 0x400, REG_ACCESS, 1000, &dt5550w, &read_data, &valid_data);
+    NI_USB3_WriteReg(0, 0x805, &dt5550w);
+    for (int i=0; i<valid_data; i++){
+      printf("%d ",mydata[i]);
+      if (i%8==0) printf("\n");
+    }
+      
+    
+    uint32_t i = 0;
+    
+    printf("Register access test .... ");
+    for (int i=0; i<100; i++){
+       uint32_t xxx;
+       NI_USB3_WriteReg(i++, 1, &dt5550w);
+       NI_USB3_ReadReg(&xxx, 0,  &dt5550w);      
+       printf("written: %8d  read: %8d\n",i, xxx);
+    }
+
+    NI_USB3_SetHV(true, 22, &dt5550w);
+
 	while (1){
     NI_USB3_GetHV(&Enable, &voltage, &current, &dt5550w);
     printf("HV enable:   %d\n",Enable);
@@ -55,9 +89,9 @@ int main(){
     printf("Temp[0]:     %f\n",temp);
     NI_USB3_GetDT5550WTempSens(1, &temp, &dt5550w);
     printf("Temp[1]:     %f\n",temp);
-	Sleep(1000);
+	  usleep(1000000);
 	}
-
+/*
     for (int i =0; i<1000;i++){
         for (int i=0;i<1024;i++)
             	data[i] = i;
@@ -83,4 +117,5 @@ int main(){
         printf("."); fflush(stdout);
     }
     printf("\n\n");
+    */
 }
